@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @ToString(callSuper = true, exclude = {"restaurant"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "lunch", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"}, name = "lunch_unique_restaurant_date_name_idx")})
+@Table(name = "lunchs", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "date", "name"}, name = "lunchs_unique_restaurant_date_name_idx")})
 public class Lunch extends AbstractBaseEntity {
 
     @Column(name = "name", nullable = false)

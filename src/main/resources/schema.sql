@@ -15,15 +15,15 @@ CREATE TABLE user_roles
     FOREIGN KEY (user_id) REFERENCES USERS (id) ON DELETE CASCADE
 );
 
-CREATE TABLE restaurant
+CREATE TABLE restaurants
 (
     id   INTEGER      NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX restaurant_unique_name_idx on restaurant (name);
+CREATE UNIQUE INDEX restaurants_unique_name_idx on restaurants (name);
 
-CREATE TABLE lunch
+CREATE TABLE lunchs
 (
     id            INTEGER            NOT NULL AUTO_INCREMENT,
     name          VARCHAR(255)       NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE lunch
     date          DATE DEFAULT now() NOT NULL,
     restaurant_id INTEGER            NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
-create unique index LUNCH_UNIQUE_RESTAURANT_ID_NAME_DATE_IDX
-    on LUNCH (RESTAURANT_ID, NAME, DATE);
+create unique index LUNCHS_UNIQUE_RESTAURANT_ID_NAME_DATE_IDX
+    on LUNCHS (RESTAURANT_ID, NAME, DATE);
