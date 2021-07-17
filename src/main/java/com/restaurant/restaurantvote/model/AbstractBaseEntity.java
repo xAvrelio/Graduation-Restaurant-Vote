@@ -1,7 +1,6 @@
 package com.restaurant.restaurantvote.model;
 
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.util.ProxyUtils;
 import org.springframework.util.Assert;
@@ -16,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class AbstractBaseEntity implements Persistable<Integer>  {
+public class AbstractBaseEntity implements Persistable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
@@ -26,7 +25,7 @@ public class AbstractBaseEntity implements Persistable<Integer>  {
         return id;
     }
 
-  //  @JsonIgnore
+    //  @JsonIgnore
     @Override
     public boolean isNew() {
         return id == null;

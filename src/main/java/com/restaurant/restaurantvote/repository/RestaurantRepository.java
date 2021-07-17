@@ -8,18 +8,24 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 @Transactional(readOnly = true)
-public interface CrudRestaurantRepository extends JpaRepository<Restaurant, Integer> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
 
     @Modifying
     @Transactional
     @Query("DELETE FROM Restaurant r where r.id=:id")
     int deleteById(int id);
 
-    @EntityGraph(attributePaths = "restaurant")
+    @EntityGraph(attributePaths = "lunches")
     @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.lunches WHERE r.id=:id")
     Restaurant findByIdWithLunches(int id);
+
+    @EntityGraph(attributePaths = "lunches")
+    @Query("SELECT r FROM Restaurant r LEFT JOIN FETCH r.lunches")
+    List<Restaurant> findByIdWithLunches();
 
 
 }

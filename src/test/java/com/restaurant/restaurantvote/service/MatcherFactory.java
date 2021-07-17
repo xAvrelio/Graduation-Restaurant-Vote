@@ -3,6 +3,7 @@ package com.restaurant.restaurantvote.service;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Factory for creating test matchers.
  * <p>

@@ -10,11 +10,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Transactional(readOnly = true)
-public interface CrudLunchRepository extends JpaRepository<Lunch, Integer> {
+public interface LunchRepository extends JpaRepository<Lunch, Integer> {
 
-    List<Lunch> getLunchByDateOrderByPriceDesc(LocalDate date);
+    List<Lunch> findLunchByDate(LocalDate date);
 
-    List<Lunch> getLunchByDateBetweenOrderByPriceDesc(LocalDate startDate, LocalDate endDate);
+    List<Lunch> findLunchByDateBetween(LocalDate startDate, LocalDate endDate);
 
     @Transactional
     @Modifying

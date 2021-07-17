@@ -5,6 +5,8 @@ import com.restaurant.restaurantvote.util.exception.NotFoundException;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 
+import java.util.Objects;
+
 public class ValidationUtil {
     private ValidationUtil() {
     }
@@ -19,7 +21,8 @@ public class ValidationUtil {
     }
 
     public static <T> T checkNotFound(T object, String msg) {
-        checkNotFound(object != null, msg);
+        checkNotFound(Objects.nonNull(object), msg);
+
         return object;
     }
 
