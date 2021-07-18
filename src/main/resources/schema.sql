@@ -35,3 +35,16 @@ CREATE TABLE lunchs
 );
 create unique index LUNCHS_UNIQUE_RESTAURANT_ID_NAME_DATE_IDX
     on LUNCHS (RESTAURANT_ID, NAME, DATE);
+
+CREATE TABLE votes
+(
+    id            INTEGER            NOT NULL AUTO_INCREMENT,
+    date          DATE DEFAULT now() NOT NULL,
+    restaurant_id INTEGER            NOT NULL,
+    user_id       INTEGER            NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+create unique index votes_unique_date_user_idx
+    on votes (date, user_id);
