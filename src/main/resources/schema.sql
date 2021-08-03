@@ -23,18 +23,29 @@ CREATE TABLE restaurants
 );
 CREATE UNIQUE INDEX restaurants_unique_name_idx on restaurants (name);
 
-CREATE TABLE lunchs
+CREATE TABLE menus
 (
     id            INTEGER            NOT NULL AUTO_INCREMENT,
-    name          VARCHAR(255)       NOT NULL,
-    price         REAL               NOT NULL,
-    date          DATE DEFAULT now() NOT NULL,
+    create_date   DATE DEFAULT now() NOT NULL,
     restaurant_id INTEGER            NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurants (id) ON DELETE CASCADE
 );
-create unique index LUNCHS_UNIQUE_RESTAURANT_ID_NAME_DATE_IDX
-    on LUNCHS (RESTAURANT_ID, NAME, DATE);
+create unique index menus_unique_date_restaurant_idx
+    on menus (RESTAURANT_ID, create_date);
+
+CREATE TABLE lunchs
+(
+    id      INTEGER      NOT NULL AUTO_INCREMENT,
+    name    VARCHAR(255) NOT NULL,
+    price   REAL         NOT NULL,
+    menu_id INTEGER      NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (menu_id) REFERENCES menus (id) ON DELETE CASCADE
+);
+
+create unique index lunchs_unique_name_menu_idx
+    on LUNCHS (menu_id, name);
 
 CREATE TABLE votes
 (

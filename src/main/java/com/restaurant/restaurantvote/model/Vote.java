@@ -1,8 +1,6 @@
 package com.restaurant.restaurantvote.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -12,7 +10,8 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@ToString(callSuper = true, exclude = {"user", "restaurant"})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(callSuper = true, exclude = {"user"})
 @Table(name = "votes")
 public class Vote extends AbstractBaseEntity {
 
@@ -24,12 +23,14 @@ public class Vote extends AbstractBaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Restaurant restaurant;
+    @Column(name = "restaurant_id")
+    private int restaurantId;
 
-    public Vote() {
+
+    public Vote(Integer id, Integer restaurantId) {
+        super(id);
+        this.restaurantId = restaurantId;
         this.date = LocalDate.now();
     }
+
 }

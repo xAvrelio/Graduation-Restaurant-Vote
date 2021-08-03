@@ -1,7 +1,8 @@
-package com.restaurant.restaurantvote.service;
+package com.restaurant.restaurantvote.service.TestData;
 
 import com.restaurant.restaurantvote.model.Role;
 import com.restaurant.restaurantvote.model.User;
+import com.restaurant.restaurantvote.service.MatcherFactory;
 import com.restaurant.restaurantvote.util.ValidationUtil;
 
 import java.util.Collections;

@@ -1,42 +1,42 @@
 package com.restaurant.restaurantvote.service;
 
 import com.restaurant.restaurantvote.model.Lunch;
-import com.restaurant.restaurantvote.model.Restaurant;
 import com.restaurant.restaurantvote.repository.LunchRepository;
-import com.restaurant.restaurantvote.repository.RestaurantRepository;
+import com.restaurant.restaurantvote.repository.MenuRepository;
+import com.restaurant.restaurantvote.util.exception.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static com.restaurant.restaurantvote.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
+@Transactional(readOnly = true)
 public class LunchService {
 
-    private LunchRepository lunchRepository;
+    private final LunchRepository lunchRepository;
 
-    private RestaurantRepository restaurantRepository;
+    private final MenuRepository menuRepository;
 
-    public LunchService(LunchRepository lunchRepository, RestaurantRepository restaurantRepository) {
+    public LunchService(LunchRepository lunchRepository, MenuRepository menuRepository) {
         this.lunchRepository = lunchRepository;
-        this.restaurantRepository = restaurantRepository;
+        this.menuRepository = menuRepository;
     }
 
-
+    @Transactional
     public void deleteById(int id) {
         checkNotFoundWithId(lunchRepository.deleteById(id) != 0, id);
     }
 
 
-    public Lunch save(Lunch lunch, int restaurantId) {
-        Assert.notNull(lunch, "meal must not be null");
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElse(null);
-        if (!lunch.isNew() && restaurant == null) {
-            return null;
+    public Lunch save(Lunch lunch, int menuId) {
+        Assert.notNull(lunch, "lunch must not be null");
+        if (!menuRepository.existsById(menuId)) {
+            throw new NotFoundException("menu not found id=" + menuId);
         }
-        lunch.setRestaurant(restaurant);
+        lunch.setMenu(menuRepository.getById(menuId));
         return checkNotFoundWithId(lunchRepository.save(lunch), lunch.id());
     }
 
@@ -44,13 +44,17 @@ public class LunchService {
         return checkNotFoundWithId(lunchRepository.findById(id).orElse(null), id);
     }
 
-    public List<Lunch> findByDate(LocalDate date) {
-        return lunchRepository.findLunchByDate(date);
+    public List<Lunch> findAll (){
+        return lunchRepository.findAll();
     }
 
-    public List<Lunch> findBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return lunchRepository.findLunchByDateBetween(startDate, endDate);
+    public List<Lunch> findByMenuId(int menuId) {
+        if (!menuRepository.existsById(menuId)) {
+            throw new NotFoundException("menu not found id=" + menuId);
+        }
+        return lunchRepository.findAllByMenu_Id(menuId);
     }
+
 
 
 }

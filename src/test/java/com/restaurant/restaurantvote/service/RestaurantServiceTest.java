@@ -1,53 +1,26 @@
 package com.restaurant.restaurantvote.service;
 
 
+import com.restaurant.restaurantvote.model.Menu;
 import com.restaurant.restaurantvote.model.Restaurant;
+import com.restaurant.restaurantvote.service.TestData.MenuTestData;
 import com.restaurant.restaurantvote.to.RestaurantTo;
 import com.restaurant.restaurantvote.util.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
-import static com.restaurant.restaurantvote.service.RestaurantTestData.*;
+import static com.restaurant.restaurantvote.service.TestData.MenuTestData.RESTAURANT_ID;
+import static com.restaurant.restaurantvote.service.TestData.RestaurantTestData.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@Transactional
-@ActiveProfiles("test")
-class RestaurantServiceTest {
+class RestaurantServiceTest extends AbstractServiceTest {
 
     @Autowired
     private RestaurantService service;
-
-    @Test
-    void getRestaurantsWithLunchesByDate() {
-        List<RestaurantTo> list = service.getWithLunchesByDate(FOUND_DATE_START);
-        MATCHER_TO.assertMatch(list, ALL_RESTAURANTS_TO);
-    }
-
-    @Test
-    void getRestaurantsWithLunchesByDateEmpty() {
-        List<RestaurantTo> list = service.getWithLunchesByDate(NOT_FOUND_DATE);
-        MATCHER_TO.assertMatch(list, List.of(withLunchesTo(RESTAURANT1, Collections.emptyList()), withLunchesTo(RESTAURANT2, Collections.emptyList()), withLunchesTo(RESTAURANT3, Collections.emptyList())));
-    }
-
-    @Test
-    void getRestaurantsWithLunchesBetweenDates() {
-        List<RestaurantTo> list = service.getWithLunchesBetweenDates(FOUND_DATE_START, FOUND_DATE_END);
-        MATCHER_TO.assertMatch(list, ALL_RESTAURANTS_TO);
-    }
-
-    @Test
-    void getRestaurantsWithLunchesBetweenDatesEmpty() {
-        List<RestaurantTo> list = service.getWithLunchesBetweenDates(NOT_FOUND_DATE, NOT_FOUND_DATE);
-        MATCHER_TO.assertMatch(list, List.of(withLunchesTo(RESTAURANT1, Collections.emptyList()), withLunchesTo(RESTAURANT2, Collections.emptyList()), withLunchesTo(RESTAURANT3, Collections.emptyList())));
-    }
 
     @Test
     void delete() {
@@ -95,17 +68,58 @@ class RestaurantServiceTest {
     }
 
     @Test
-    void getByIdWithLunchs() {
-        Restaurant actual = service.findByIdWithLunchs(RESTAURANT_ID);
-        MATCHER.assertMatch(actual, RESTAURANT1);
-        LunchTestData.MATCHER.assertMatch(actual.getLunches(), RESTAURANT1_LUNCHES);
+    void findAllWithMenuBetweenDates() {
+        List<RestaurantTo> actual = service.findAllWithMenuBetweenDates(ThreeMenuDate, TwoMenuDate);
+        List<RestaurantTo> expected = List.of(
+                new RestaurantTo(RESTAURANT1, List.of(MenuTestData.MENU, MenuTestData.MENU3)),
+                new RestaurantTo(RESTAURANT2, List.of(MenuTestData.MENU1, MenuTestData.MENU4)),
+                new RestaurantTo(RESTAURANT3, List.of(MenuTestData.MENU2))
+        );
+        MATCHER_TO.assertMatch(actual, expected);
     }
 
     @Test
-    void getAllWithLunches() {
-        List<Restaurant> actual = service.findAllWithLunches();
-        List<Restaurant> excepted = List.of(withLunches(RESTAURANT1, RESTAURANT1_LUNCHES), withLunches(RESTAURANT2, RESTAURANT2_LUNCHES), withLunches(RESTAURANT3, Collections.emptyList()));
-        MATCHER.assertMatch(actual, ALL_RESTAURANTS);
-        actual.forEach(restaurant -> LunchTestData.MATCHER.assertMatch(restaurant.getLunches(), excepted.get(excepted.indexOf(restaurant)).getLunches()));
+    void findAllWithMenuNullDates() {
+        List<RestaurantTo> actual = service.findAllWithMenuBetweenDates(null, null);
+        List<RestaurantTo> expected = List.of(
+                new RestaurantTo(RESTAURANT1, List.of(MenuTestData.MENU, MenuTestData.MENU3, MenuTestData.MENU_NOW)),
+                new RestaurantTo(RESTAURANT2, List.of(MenuTestData.MENU1, MenuTestData.MENU4)),
+                new RestaurantTo(RESTAURANT3, List.of(MenuTestData.MENU2))
+        );
+        MATCHER_TO.assertMatch(actual, expected);
     }
+
+    @Test
+    void findAllWithMenuByDate() {
+        List<RestaurantTo> actual = service.findAllWithMenuByDate(TwoMenuDate);
+        List<RestaurantTo> expected = List.of(
+                new RestaurantTo(RESTAURANT1, MenuTestData.MENU3),
+                new RestaurantTo(RESTAURANT2, MenuTestData.MENU4),
+                new RestaurantTo(RESTAURANT3, (Menu) null)
+        );
+        MATCHER_TO.assertMatch(actual, expected);
+    }
+
+    @Test
+    void findAllWithMenuByNullDate() {
+        List<RestaurantTo> actual = service.findAllWithMenuByDate(null);
+        List<RestaurantTo> expected = List.of(
+                new RestaurantTo(RESTAURANT1, MenuTestData.MENU_NOW),
+                new RestaurantTo(RESTAURANT2, (Menu) null),
+                new RestaurantTo(RESTAURANT3, (Menu) null)
+        );
+        MATCHER_TO.assertMatch(actual, expected);
+    }
+
+    @Test
+    void createWithEmptyName() {
+        validateRootCause(ConstraintViolationException.class, () -> service.save(new Restaurant(null, "")));
+    }
+
+    @Test
+    void createWithMinSizeName() {
+        validateRootCause(ConstraintViolationException.class, () -> service.save(new Restaurant(null, "1")));
+    }
+
+
 }

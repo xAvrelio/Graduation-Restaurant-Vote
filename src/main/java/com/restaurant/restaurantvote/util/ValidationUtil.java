@@ -15,6 +15,13 @@ public class ValidationUtil {
         checkNotFoundWithId(object != null, id);
         return object;
     }
+    public static <T> T checkNotFoundWithName(T object, String name) {
+        checkNotFoundWithName(object != null, name);
+        return object;
+    }
+    public static void checkNotFoundWithName(boolean found, String name) {
+        checkNotFound(found, "name=" + name);
+    }
 
     public static void checkNotFoundWithId(boolean found, int id) {
         checkNotFound(found, "id=" + id);

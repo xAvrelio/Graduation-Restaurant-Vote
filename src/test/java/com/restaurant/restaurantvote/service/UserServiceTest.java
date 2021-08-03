@@ -2,24 +2,19 @@ package com.restaurant.restaurantvote.service;
 
 import com.restaurant.restaurantvote.model.Role;
 import com.restaurant.restaurantvote.model.User;
+import com.restaurant.restaurantvote.service.TestData.UserTestData;
 import com.restaurant.restaurantvote.util.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
-import static com.restaurant.restaurantvote.service.UserTestData.*;
+import static com.restaurant.restaurantvote.service.TestData.UserTestData.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@Transactional
-@ActiveProfiles("test")
-class UserServiceTest {
+class UserServiceTest extends AbstractServiceTest {
 
     @Autowired
     protected UserService service;
