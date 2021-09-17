@@ -26,12 +26,13 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
     @Query("SELECT m FROM Menu m WHERE m.createDate=:date")
     List<Menu> findAllWithLunchsByDate(LocalDate date);
 
-    List<Menu> findAllByRestaurant_Id(int restaurantId);
+    @EntityGraph(attributePaths = {"lunchs"}, type = EntityGraph.EntityGraphType.LOAD)
+    List<Menu> findAllByRestaurantId(int restaurantId);
 
     //https://stackoverflow.com/questions/41876122/spring-data-jpa-repository-findall-to-return-map-instead-of-list
     //Granted by DB it's will return a unique menu for restaurant in 1 day
-    default Map<Integer, Menu> findAllWithLunchsByDateToMap(LocalDate date) {
-        return findAllWithLunchsByDate(date).stream().collect(Collectors.toMap(menu -> menu.getRestaurant().getId(), v -> v));
+    default Map<Integer, List<Menu>> findAllWithLunchsByDateToMap(LocalDate date) {
+        return findAllWithLunchsByDate(date).stream().collect(Collectors.groupingBy(menu -> menu.getRestaurant().getId()));
     }
 
     default Map<Integer, List<Menu>> findAllWithLunchsBetweenDatesToMap(LocalDate startDate, LocalDate endDate) {

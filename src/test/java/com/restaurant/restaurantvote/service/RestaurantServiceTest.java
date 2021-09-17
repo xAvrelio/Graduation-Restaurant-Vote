@@ -1,7 +1,6 @@
 package com.restaurant.restaurantvote.service;
 
 
-import com.restaurant.restaurantvote.model.Menu;
 import com.restaurant.restaurantvote.model.Restaurant;
 import com.restaurant.restaurantvote.service.TestData.MenuTestData;
 import com.restaurant.restaurantvote.to.RestaurantTo;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.restaurant.restaurantvote.service.TestData.MenuTestData.RESTAURANT_ID;
@@ -35,7 +35,7 @@ class RestaurantServiceTest extends AbstractServiceTest {
 
     @Test
     public void create() {
-        Restaurant created = service.save(getNew());
+        Restaurant created = service.create(getNew());
         int newId = created.id();
         Restaurant newRestaurant = getNew();
         newRestaurant.setId(newId);
@@ -46,14 +46,15 @@ class RestaurantServiceTest extends AbstractServiceTest {
     @Test
     public void createDuplicate() {
         assertThrows(DataAccessException.class, () ->
-                service.save(RESTAURANT_DUPLICATE));
+                service.create(RESTAURANT_DUPLICATE));
     }
 
     @Test
     public void update() {
         Restaurant updated = getUpdated();
-        service.save(updated);
-        MATCHER.assertMatch(service.findById(RESTAURANT_ID), getUpdated());
+        service.update(updated);
+        Restaurant restaurant = service.findById(RESTAURANT_ID);
+        MATCHER.assertMatch(restaurant, updated);
     }
 
     @Test
@@ -93,9 +94,9 @@ class RestaurantServiceTest extends AbstractServiceTest {
     void findAllWithMenuByDate() {
         List<RestaurantTo> actual = service.findAllWithMenuByDate(TwoMenuDate);
         List<RestaurantTo> expected = List.of(
-                new RestaurantTo(RESTAURANT1, MenuTestData.MENU3),
-                new RestaurantTo(RESTAURANT2, MenuTestData.MENU4),
-                new RestaurantTo(RESTAURANT3, (Menu) null)
+                new RestaurantTo(RESTAURANT1, List.of(MenuTestData.MENU3)),
+                new RestaurantTo(RESTAURANT2, List.of(MenuTestData.MENU4)),
+                new RestaurantTo(RESTAURANT3, Collections.emptyList())
         );
         MATCHER_TO.assertMatch(actual, expected);
     }
@@ -104,21 +105,21 @@ class RestaurantServiceTest extends AbstractServiceTest {
     void findAllWithMenuByNullDate() {
         List<RestaurantTo> actual = service.findAllWithMenuByDate(null);
         List<RestaurantTo> expected = List.of(
-                new RestaurantTo(RESTAURANT1, MenuTestData.MENU_NOW),
-                new RestaurantTo(RESTAURANT2, (Menu) null),
-                new RestaurantTo(RESTAURANT3, (Menu) null)
+                new RestaurantTo(RESTAURANT1, List.of(MenuTestData.MENU_NOW)),
+                new RestaurantTo(RESTAURANT2, Collections.emptyList()),
+                new RestaurantTo(RESTAURANT3, Collections.emptyList())
         );
         MATCHER_TO.assertMatch(actual, expected);
     }
 
     @Test
     void createWithEmptyName() {
-        validateRootCause(ConstraintViolationException.class, () -> service.save(new Restaurant(null, "")));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Restaurant(null, "")));
     }
 
     @Test
     void createWithMinSizeName() {
-        validateRootCause(ConstraintViolationException.class, () -> service.save(new Restaurant(null, "1")));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Restaurant(null, "1")));
     }
 
 

@@ -5,7 +5,6 @@ import com.restaurant.restaurantvote.model.Menu;
 import com.restaurant.restaurantvote.model.Restaurant;
 import com.restaurant.restaurantvote.repository.MenuRepository;
 import com.restaurant.restaurantvote.repository.RestaurantRepository;
-import com.restaurant.restaurantvote.repository.VoteRepository;
 import com.restaurant.restaurantvote.to.RestaurantTo;
 import com.restaurant.restaurantvote.util.DateTimeUtil;
 import com.restaurant.restaurantvote.util.exception.NotFoundException;
@@ -29,13 +28,10 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    private final VoteRepository voteRepository;
-
     private final MenuRepository menuRepository;
 
-    public RestaurantService(RestaurantRepository restaurantRepository, VoteRepository voteRepository, MenuRepository menuRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository, MenuRepository menuRepository) {
         this.restaurantRepository = restaurantRepository;
-        this.voteRepository = voteRepository;
         this.menuRepository = menuRepository;
     }
 
@@ -46,13 +42,23 @@ public class RestaurantService {
     }
 
     @Transactional
-    public Restaurant save(Restaurant restaurant) {
+    public Restaurant create(Restaurant restaurant) {
         Assert.notNull(restaurant, "restaurant must not be null");
         return restaurantRepository.save(restaurant);
     }
 
+    @Transactional
+    public void update(Restaurant restaurant) {
+        Assert.notNull(restaurant, "restaurant must not be null");
+        restaurantRepository.save(restaurant);
+    }
+
     public Restaurant findById(int id) {
         return checkNotFoundWithId(restaurantRepository.findById(id).orElse(null), id);
+    }
+
+    public List<Restaurant> findAll() {
+        return restaurantRepository.findAll();
     }
 
 
@@ -64,7 +70,7 @@ public class RestaurantService {
         Map<Integer, List<Menu>> menuMap = menuRepository.findAllWithLunchsBetweenDatesToMap(startDate, endDate);
 
         return restaurants.stream()
-                .map(restaurant -> new RestaurantTo(restaurant.getId(), restaurant.getName(), menuMap.getOrDefault(restaurant.getId(), Collections.EMPTY_LIST)))
+                .map(restaurant -> new RestaurantTo(restaurant.id(), restaurant.getName(), menuMap.getOrDefault(restaurant.id(), Collections.EMPTY_LIST)))
                 .collect(Collectors.toList());
     }
 
@@ -72,12 +78,11 @@ public class RestaurantService {
         date = Objects.isNull(date) ? LocalDate.now() : date;
         List<Restaurant> restaurants = restaurantRepository.findAll();
         if (restaurants.isEmpty()) throw new NotFoundException("No Restaurants found");
-        Map<Integer, Menu> menuMap = menuRepository.findAllWithLunchsByDateToMap(date);
+        Map<Integer, List<Menu>> menuMap = menuRepository.findAllWithLunchsByDateToMap(date);
 
         return restaurants.stream()
-                .map(restaurant -> new RestaurantTo(restaurant.getId(), restaurant.getName(), menuMap.getOrDefault(restaurant.getId(), null)))
+                .map(restaurant -> new RestaurantTo(restaurant.id(), restaurant.getName(), menuMap.getOrDefault(restaurant.id(), Collections.EMPTY_LIST)))
                 .collect(Collectors.toList());
     }
-
 
 }

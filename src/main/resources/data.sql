@@ -31,11 +31,11 @@ values (1, 'Sandwich', 2.55, 1),
        (9, 'Pizza22', 6.01, 4),
        (10, 'Pizza31', 6.01, 5);
 
-
+INSERT INTO votes (id, restaurant_id, user_id)
+values (1, 1, 1);
 
 INSERT INTO votes (id, date, restaurant_id, user_id)
-values (1,'2021-07-10', 1, 1),
-       (2,'2021-07-10', 2, 2),
+values (2,'2021-07-10', 2, 2),
        (3,'2021-07-11', 1, 1),
        (4,'2021-07-12', 3, 2),
        (5,'2021-07-15', 1, 1),

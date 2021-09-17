@@ -1,5 +1,7 @@
 package com.restaurant.restaurantvote.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,12 +24,14 @@ public class Menu extends AbstractBaseEntity {
     @NotNull
     private LocalDate createDate;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "menu")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "menu")
+    @JsonManagedReference
     private List<Lunch> lunchs =  new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Restaurant restaurant;
 
     public Menu(Integer id, LocalDate createDate) {

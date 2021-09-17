@@ -35,7 +35,7 @@ class MenuServiceTest extends AbstractServiceTest {
 
     @Test
     void create() {
-        Menu created = service.save(getNew(), RESTAURANT_ID);
+        Menu created = service.create(getNew(), RESTAURANT_ID);
         int newId = created.id();
         Menu newMenu = getNew();
         newMenu.setId(newId);
@@ -46,14 +46,14 @@ class MenuServiceTest extends AbstractServiceTest {
     @Test
     void update() {
         Menu updated = getUpdated();
-        service.save(updated, RESTAURANT_ID);
+        service.create(updated, RESTAURANT_ID);
         MATCHER.assertMatch(service.findById(MENU_ID), getUpdated());
     }
 
     @Test
     public void createDuplicate() {
         assertThrows(DataAccessException.class, () ->
-                service.save(MENU_DUPLICATED, RESTAURANT_ID));
+                service.create(MENU_DUPLICATED, RESTAURANT_ID));
     }
 
     @Test
@@ -126,7 +126,7 @@ class MenuServiceTest extends AbstractServiceTest {
 
     @Test
     void createWithNullDate() {
-        validateRootCause(ConstraintViolationException.class, () -> service.save(new Menu(null,null), RESTAURANT_ID));
+        validateRootCause(ConstraintViolationException.class, () -> service.create(new Menu(null,null), RESTAURANT_ID));
     }
 
 }

@@ -5,32 +5,21 @@ import com.restaurant.restaurantvote.model.Menu;
 import com.restaurant.restaurantvote.model.Restaurant;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class RestaurantTo {
     private final int id;
-    private final String name;
-    private Menu menu;
-    private List<Menu> menus = new ArrayList<>();
 
-    public RestaurantTo(Restaurant restaurant, Menu menu){
-        this.id = restaurant.getId();
-        this.name = restaurant.getName();
-        this.menu = menu;
-    }
+    private final String name;
+
+    private final List<Menu> menus;
+
 
     public RestaurantTo(Restaurant restaurant, List<Menu> menu) {
         this.id = restaurant.getId();
         this.name = restaurant.getName();
         this.menus = menu;
-    }
-
-    public RestaurantTo(int id, String name, Menu menu) {
-        this.id = id;
-        this.name = name;
-        this.menu = menu;
     }
 
     public RestaurantTo(int id, String name, List<Menu> menus) {
@@ -49,7 +38,6 @@ public class RestaurantTo {
 
         if (id != that.id) return false;
         if (!name.equals(that.name)) return false;
-        if (!menu.equals(that.menu)) return false;
         return menus != null ? menus.equals(that.menus) : that.menus == null;
     }
 
@@ -57,21 +45,16 @@ public class RestaurantTo {
     public int hashCode() {
         int result = id;
         result = 31 * result + name.hashCode();
+        result = 31 * result + (menus != null ? menus.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("RestaurantTo{");
-        sb.append("id=").append(id);
-        sb.append(", name=").append(name).append('\'');
-        if (menus.isEmpty()) {
-            sb.append(", menu=").append(menu);
-        } else {
-            sb.append(", menus=").append(menus);
-        }
-        sb.append('}');
-        return sb.toString();
+        return "RestaurantTo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", menus=" + menus +
+                '}';
     }
 }

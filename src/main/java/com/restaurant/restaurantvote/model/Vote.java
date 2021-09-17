@@ -11,26 +11,35 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(callSuper = true, exclude = {"user"})
-@Table(name = "votes")
+@ToString(callSuper = true, exclude = {"user", "restaurant"})
+@Table(name = "votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"date", "user_id"}, name = "votes_unique_date_user_idx")})
 public class Vote extends AbstractBaseEntity {
 
     @Column(name = "date", nullable = false, columnDefinition = "date default now()")
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @Column(name = "restaurant_id")
-    private int restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Restaurant restaurant;
 
-
-    public Vote(Integer id, Integer restaurantId) {
+    public Vote(Integer id) {
         super(id);
-        this.restaurantId = restaurantId;
-        this.date = LocalDate.now();
     }
 
+    public Vote(Integer id, Restaurant restaurant) {
+        super(id);
+        this.restaurant = restaurant;
+    }
+
+    public Vote(Integer id, User user, Restaurant restaurant) {
+        super(id);
+        this.user = user;
+        this.restaurant = restaurant;
+    }
 }

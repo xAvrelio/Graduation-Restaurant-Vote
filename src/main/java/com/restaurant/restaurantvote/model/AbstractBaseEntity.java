@@ -1,5 +1,6 @@
 package com.restaurant.restaurantvote.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.util.ProxyUtils;
@@ -25,7 +26,7 @@ public class AbstractBaseEntity implements Persistable<Integer> {
         return id;
     }
 
-    //  @JsonIgnore
+    @JsonIgnore
     @Override
     public boolean isNew() {
         return id == null;

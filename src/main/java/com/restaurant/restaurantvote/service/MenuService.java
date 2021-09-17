@@ -38,7 +38,18 @@ public class MenuService {
 
     @Transactional
     @Modifying
-    public Menu save(Menu menu, int restaurantId) {
+    public void update(Menu menu, int restaurantId) {
+        Assert.notNull(menu, "menu must not be null");
+        if (!restaurantRepository.existsById(restaurantId)) {
+            throw new NotFoundException("Not found restaurantId =" + restaurantId);
+        }
+        menu.setRestaurant(restaurantRepository.getById(restaurantId));
+        checkNotFoundWithId(menuRepository.save(menu), menu.id());
+    }
+
+    @Transactional
+    @Modifying
+    public Menu create(Menu menu, int restaurantId) {
         Assert.notNull(menu, "menu must not be null");
         if (!restaurantRepository.existsById(restaurantId)) {
             throw new NotFoundException("Not found restaurantId =" + restaurantId);
@@ -55,7 +66,7 @@ public class MenuService {
         if (!restaurantRepository.existsById(restaurantId)) {
             throw new NotFoundException("Not found restaurantId =" + restaurantId);
         }
-        return menuRepository.findAllByRestaurant_Id(restaurantId);
+        return menuRepository.findAllByRestaurantId(restaurantId);
     }
 
     public List<Menu> findAllByDateWithLunches(@Nullable LocalDate date) {
